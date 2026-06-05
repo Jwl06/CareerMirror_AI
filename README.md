@@ -28,6 +28,23 @@ bun dev
 
 Open [http://localhost:8080](http://localhost:8080) — you'll see a placeholder page until the landing page milestone ships.
 
+## Design System
+
+CareerMirror uses a **fixed dark theme** (no light-mode toggle) built on Tailwind CSS v4:
+
+| Token | Role |
+|-------|------|
+| Deep navy background | App canvas with subtle radial ambient gradients |
+| Vivid green (`primary`) | CTAs, success states, readiness scores |
+| Electric violet (`accent`) | Highlights and secondary emphasis |
+| Glass cards (`.glass`) | Frosted panels with backdrop blur |
+
+**Typography:** Inter (body) + Space Grotesk (headings), loaded via Google Fonts.
+
+**Utility classes:** `.glass`, `.glass-strong`, `.gradient-text`, `.glow`, `.glow-accent`
+
+> Screenshots will be added as features ship (landing page, dashboard, analysis view).
+
 ## Planned User Flow
 
 ```
@@ -44,8 +61,8 @@ Open [http://localhost:8080](http://localhost:8080) — you'll see a placeholder
 
 | Milestone | Status |
 |-----------|--------|
-| Initialize project | ✅ Current |
-| Design system & app shell | 🔜 |
+| Initialize project | ✅ Done |
+| Design system & app shell | ✅ Current |
 | Landing page | 🔜 |
 | Authentication | 🔜 |
 | Assessment & AI analysis | 🔜 |
