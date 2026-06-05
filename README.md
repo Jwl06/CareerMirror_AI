@@ -17,7 +17,7 @@ Students often don't know how their profile compares to what employers expect. C
 ## Prerequisites
 
 - [Bun](https://bun.sh) (recommended) or Node.js 22+
-- A Supabase project (added in a later milestone)
+- A [Supabase](https://supabase.com) project (or use the included `.env` for local dev)
 
 ## Getting Started
 
@@ -56,6 +56,26 @@ CareerMirror uses a **fixed dark theme** (no light-mode toggle) built on Tailwin
 
 > Add a screenshot of the landing page to `docs/screenshots/landing.png` when capturing for your portfolio.
 
+## Authentication
+
+Email/password auth via Supabase at `/auth`:
+
+- **Sign up** — `?mode=signup` creates an account and redirects to `/start`
+- **Login** — default mode; redirects authenticated users away from `/auth`
+- **Session sync** — auth state changes invalidate the router and query cache
+
+### Environment Variables
+
+| Variable | Required | Where |
+|----------|----------|-------|
+| `VITE_SUPABASE_URL` | Yes | Client |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Yes | Client |
+| `SUPABASE_URL` | Yes | Server middleware |
+| `SUPABASE_PUBLISHABLE_KEY` | Yes | Server middleware |
+| `VITE_SUPABASE_PROJECT_ID` | Yes | Supabase project linking |
+
+Copy `.env` and replace values with your own Supabase project credentials for production.
+
 ## Planned User Flow
 
 ```
@@ -74,8 +94,8 @@ CareerMirror uses a **fixed dark theme** (no light-mode toggle) built on Tailwin
 |-----------|--------|
 | Initialize project | ✅ Done |
 | Design system & app shell | ✅ Done |
-| Landing page | ✅ Current |
-| Authentication | 🔜 |
+| Landing page | ✅ Done |
+| Authentication | ✅ Current |
 | Assessment & AI analysis | 🔜 |
 | Dashboard & progress tracking | 🔜 |
 
