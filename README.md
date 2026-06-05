@@ -26,7 +26,7 @@ bun install
 bun dev
 ```
 
-Open [http://localhost:8080](http://localhost:8080) — you'll see a placeholder page until the landing page milestone ships.
+Open [http://localhost:8080](http://localhost:8080) to view the marketing landing page.
 
 ## Design System
 
@@ -43,7 +43,18 @@ CareerMirror uses a **fixed dark theme** (no light-mode toggle) built on Tailwin
 
 **Utility classes:** `.glass`, `.glass-strong`, `.gradient-text`, `.glow`, `.glow-accent`
 
-> Screenshots will be added as features ship (landing page, dashboard, analysis view).
+## Features (Landing Page)
+
+| Feature | Description |
+|---------|-------------|
+| **Find My Level** | AI-powered assessment of your current career readiness |
+| **Resume Mirror** | Side-by-side comparison vs an ideal industry candidate |
+| **Gap Analysis** | Prioritized breakdown of what's missing and why it matters |
+| **4-Month Roadmap** | Personalized weekly tasks to close your gaps |
+
+**Tagline:** *Duolingo for career growth*
+
+> Add a screenshot of the landing page to `docs/screenshots/landing.png` when capturing for your portfolio.
 
 ## Planned User Flow
 
@@ -62,8 +73,8 @@ CareerMirror uses a **fixed dark theme** (no light-mode toggle) built on Tailwin
 | Milestone | Status |
 |-----------|--------|
 | Initialize project | ✅ Done |
-| Design system & app shell | ✅ Current |
-| Landing page | 🔜 |
+| Design system & app shell | ✅ Done |
+| Landing page | ✅ Current |
 | Authentication | 🔜 |
 | Assessment & AI analysis | 🔜 |
 | Dashboard & progress tracking | 🔜 |
