@@ -12,7 +12,39 @@ export type Database = {
   };
   public: {
     Tables: {
-      [_ in never]: never;
+      assessments: {
+        Row: {
+          id: string;
+          user_id: string;
+          status: "pending" | "analyzing" | "completed" | "failed";
+          profile: Json;
+          analysis: Json | null;
+          readiness_score: number | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          status?: "pending" | "analyzing" | "completed" | "failed";
+          profile: Json;
+          analysis?: Json | null;
+          readiness_score?: number | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          status?: "pending" | "analyzing" | "completed" | "failed";
+          profile?: Json;
+          analysis?: Json | null;
+          readiness_score?: number | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;

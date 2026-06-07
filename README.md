@@ -73,8 +73,13 @@ Email/password auth via Supabase at `/auth`:
 | `SUPABASE_URL` | Yes | Server middleware |
 | `SUPABASE_PUBLISHABLE_KEY` | Yes | Server middleware |
 | `VITE_SUPABASE_PROJECT_ID` | Yes | Supabase project linking |
+| `LOVABLE_API_KEY` | For AI | Server (Lovable AI Gateway) |
 
-Copy `.env` and replace values with your own Supabase project credentials for production.
+Copy `.env` and replace values with your own Supabase project credentials for production. When `LOVABLE_API_KEY` is not set, the app uses a mock analysis for local development.
+
+### Database setup
+
+Run the migration in `supabase/migrations/20260307000000_assessments.sql` against your Supabase project (SQL Editor or Supabase CLI) to create the `assessments` table with RLS policies.
 
 ## Planned User Flow
 
@@ -96,8 +101,8 @@ Copy `.env` and replace values with your own Supabase project credentials for pr
 | Design system & app shell | ✅ Done |
 | Landing page | ✅ Done |
 | Authentication | ✅ Done |
-| Protected app layout | ✅ Current |
-| Assessment & AI analysis | 🔜 |
+| Protected app layout | ✅ Done |
+| Assessment & AI analysis | ✅ Current |
 | Dashboard & progress tracking | 🔜 |
 
 ## License
