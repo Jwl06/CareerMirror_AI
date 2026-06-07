@@ -102,8 +102,9 @@ Run the migration in `supabase/migrations/20260307000000_assessments.sql` agains
 | Landing page | ✅ Done |
 | Authentication | ✅ Done |
 | Protected app layout | ✅ Done |
-| Assessment & AI analysis | ✅ Current |
-| Dashboard & progress tracking | 🔜 |
+| Assessment & AI analysis | ✅ Done |
+| Career dashboard hub | ✅ Done |
+| Progress tracking & roadmap visualization | 🔜 |
 
 ## License
 

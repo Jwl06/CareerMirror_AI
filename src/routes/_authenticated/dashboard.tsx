@@ -1,16 +1,34 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { BarChart3, ClipboardList, Loader2, Sparkles } from "lucide-react";
+import type { ReactNode } from "react";
+import {
+  BarChart3,
+  ClipboardList,
+  Loader2,
+  Minus,
+  Sparkles,
+  TrendingDown,
+  TrendingUp,
+} from "lucide-react";
 
+import { ActiveAssessmentCard } from "@/components/dashboard/active-assessment-card";
+import { ScoreTrendChart } from "@/components/dashboard/score-trend-chart";
 import { listAssessments } from "@/lib/api/assessment.functions";
 import { assessmentProfileSchema } from "@/lib/assessment/schema";
+import {
+  getActiveAssessment,
+  getScoreDelta,
+  scoreColorClass,
+  type DashboardAssessment,
+} from "@/lib/dashboard/utils";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [{ title: "Dashboard — CareerMirror AI" }],
   }),
   loader: async () => {
-    const assessments = await listAssessments();
+    const assessments = (await listAssessments()) as DashboardAssessment[];
     return { assessments };
   },
   component: DashboardPage,
@@ -19,60 +37,42 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 
 function DashboardPending() {
   return (
-    <div className="flex min-h-[40vh] items-center justify-center">
-      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+    <div className="mx-auto max-w-5xl space-y-6">
+      <div className="space-y-2">
+        <Skeleton className="h-9 w-48" />
+        <Skeleton className="h-5 w-72" />
+      </div>
+      <Skeleton className="h-48 w-full rounded-2xl" />
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Skeleton className="h-24 rounded-xl" />
+        <Skeleton className="h-24 rounded-xl" />
+        <Skeleton className="h-24 rounded-xl" />
+      </div>
+      <Skeleton className="h-64 w-full rounded-2xl" />
     </div>
   );
 }
 
-function scoreColor(score: number | null) {
-  if (score == null) return "text-muted-foreground";
-  if (score >= 75) return "text-primary";
-  if (score >= 50) return "text-warning";
-  return "text-destructive";
-}
-
 function DashboardPage() {
   const { assessments } = Route.useLoaderData();
+  const active = getActiveAssessment(assessments);
   const completed = assessments.filter((a) => a.status === "completed");
   const latestScore = completed[0]?.readiness_score ?? null;
-  const roadmapWeeks = completed.length > 0 ? 16 : null;
+  const scoreDelta = getScoreDelta(completed);
+  const averageScore =
+    completed.length > 0
+      ? Math.round(
+          completed.reduce((sum, a) => sum + (a.readiness_score ?? 0), 0) / completed.length,
+        )
+      : null;
 
   return (
-    <div className="mx-auto max-w-3xl">
-      <div className="mb-8">
+    <div className="mx-auto max-w-5xl space-y-6">
+      <div>
         <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Dashboard</h1>
         <p className="mt-2 text-muted-foreground">
-          Track your assessments, scores, and roadmap progress over time.
+          Your career hub — active plan, score trends, and assessment history.
         </p>
-      </div>
-
-      <div className="mb-6 grid gap-4 sm:grid-cols-3">
-        {[
-          { icon: BarChart3, label: "Readiness score", value: latestScore ?? "—" },
-          { icon: ClipboardList, label: "Assessments", value: String(assessments.length) },
-          {
-            icon: Sparkles,
-            label: "Roadmap weeks",
-            value: roadmapWeeks ?? "—",
-          },
-        ].map((stat) => (
-          <div key={stat.label} className="glass rounded-xl p-4">
-            <div className="mb-2 flex items-center gap-2 text-muted-foreground">
-              <stat.icon className="h-4 w-4" />
-              <span className="text-xs font-medium">{stat.label}</span>
-            </div>
-            <p
-              className={`text-2xl font-bold ${
-                stat.label === "Readiness score" && typeof stat.value === "number"
-                  ? scoreColor(stat.value)
-                  : ""
-              }`}
-            >
-              {stat.value}
-            </p>
-          </div>
-        ))}
       </div>
 
       {assessments.length === 0 ? (
@@ -82,8 +82,8 @@ function DashboardPage() {
           </div>
           <h2 className="text-xl font-semibold">No assessments yet</h2>
           <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
-            Complete your first career mirror assessment to see your readiness score, gap analysis,
-            and personalized roadmap here.
+            Complete your first career mirror assessment to unlock your active plan summary, score
+            trends, and personalized roadmap.
           </p>
           <Link
             to="/start"
@@ -94,66 +94,183 @@ function DashboardPage() {
           </Link>
         </div>
       ) : (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="font-semibold">Recent assessments</h2>
-            <Link to="/start" className="text-sm text-primary hover:underline">
-              New assessment
-            </Link>
-          </div>
-          {assessments.map((assessment) => {
-            const profile = assessmentProfileSchema.safeParse(assessment.profile);
-            const role = profile.success ? profile.data.targetRole : "Career assessment";
-            const statusLabel =
-              assessment.status === "completed"
-                ? "Completed"
-                : assessment.status === "analyzing"
-                  ? "Analyzing"
-                  : assessment.status === "failed"
-                    ? "Failed"
-                    : "Pending";
+        <>
+          {active && (
+            <ActiveAssessmentCard assessment={active.assessment} kind={active.kind} />
+          )}
 
-            return (
-              <Link
-                key={assessment.id}
-                to="/analysis/$id"
-                params={{ id: assessment.id }}
-                className="glass block rounded-xl p-5 transition hover:border-primary/30 hover:translate-y-[-1px]"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <p className="font-medium">{role}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(assessment.created_at).toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Badge
-                      variant="outline"
-                      className={
-                        assessment.status === "completed"
-                          ? "border-primary/30 bg-primary/10 text-primary"
-                          : assessment.status === "failed"
-                            ? "border-destructive/30 bg-destructive/10 text-destructive"
-                            : ""
-                      }
-                    >
-                      {statusLabel}
-                    </Badge>
-                    {assessment.readiness_score != null && (
-                      <span
-                        className={`text-2xl font-bold ${scoreColor(assessment.readiness_score)}`}
-                      >
-                        {assessment.readiness_score}
-                      </span>
-                    )}
-                  </div>
-                </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <StatCard
+              icon={BarChart3}
+              label="Latest score"
+              value={latestScore ?? "—"}
+              valueClassName={scoreColorClass(latestScore)}
+              hint={
+                scoreDelta != null ? (
+                  <DeltaHint delta={scoreDelta} />
+                ) : completed.length === 1 ? (
+                  "First assessment"
+                ) : undefined
+              }
+            />
+            <StatCard
+              icon={ClipboardList}
+              label="Assessments"
+              value={`${completed.length}/${assessments.length}`}
+              hint="Completed / total"
+            />
+            <StatCard
+              icon={Sparkles}
+              label="Average score"
+              value={averageScore ?? "—"}
+              valueClassName={averageScore != null ? scoreColorClass(averageScore) : undefined}
+              hint={completed.length > 0 ? "Across completed runs" : undefined}
+            />
+            <StatCard
+              icon={BarChart3}
+              label="Roadmap plan"
+              value={completed.length > 0 ? "16 weeks" : "—"}
+              hint={completed.length > 0 ? "From latest analysis" : undefined}
+            />
+          </div>
+
+          <ScoreTrendChart assessments={assessments} />
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="font-semibold">Assessment history</h2>
+              <Link to="/start" className="text-sm text-primary hover:underline">
+                New assessment
               </Link>
-            );
-          })}
-        </div>
+            </div>
+            {assessments.map((assessment) => (
+              <AssessmentHistoryRow
+                key={assessment.id}
+                assessment={assessment}
+                isActive={active?.assessment.id === assessment.id}
+              />
+            ))}
+          </div>
+        </>
       )}
     </div>
+  );
+}
+
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  valueClassName,
+  hint,
+}: {
+  icon: typeof BarChart3;
+  label: string;
+  value: string | number;
+  valueClassName?: string;
+  hint?: ReactNode;
+}) {
+  return (
+    <div className="glass rounded-xl p-4">
+      <div className="mb-2 flex items-center gap-2 text-muted-foreground">
+        <Icon className="h-4 w-4" />
+        <span className="text-xs font-medium">{label}</span>
+      </div>
+      <p className={`text-2xl font-bold tabular-nums ${valueClassName ?? ""}`}>{value}</p>
+      {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
+    </div>
+  );
+}
+
+function DeltaHint({ delta }: { delta: number }) {
+  if (delta === 0) {
+    return (
+      <span className="inline-flex items-center gap-1">
+        <Minus className="h-3 w-3" />
+        Unchanged vs previous
+      </span>
+    );
+  }
+
+  const positive = delta > 0;
+  return (
+    <span
+      className={`inline-flex items-center gap-1 ${positive ? "text-primary" : "text-destructive"}`}
+    >
+      {positive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+      {positive ? "+" : ""}
+      {delta} vs previous
+    </span>
+  );
+}
+
+function AssessmentHistoryRow({
+  assessment,
+  isActive,
+}: {
+  assessment: DashboardAssessment;
+  isActive: boolean;
+}) {
+  const profile = assessmentProfileSchema.safeParse(assessment.profile);
+  const role = profile.success ? profile.data.targetRole : "Career assessment";
+  const statusLabel =
+    assessment.status === "completed"
+      ? "Completed"
+      : assessment.status === "analyzing"
+        ? "Analyzing"
+        : assessment.status === "failed"
+          ? "Failed"
+          : "Pending";
+
+  return (
+    <Link
+      to="/analysis/$id"
+      params={{ id: assessment.id }}
+      className={`glass block rounded-xl p-5 transition hover:border-primary/30 hover:translate-y-[-1px] ${
+        isActive ? "border border-primary/20" : ""
+      }`}
+    >
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="font-medium">{role}</p>
+            {isActive && (
+              <Badge variant="outline" className="border-primary/30 bg-primary/10 text-primary">
+                Active
+              </Badge>
+            )}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {new Date(assessment.created_at).toLocaleString()}
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Badge
+            variant="outline"
+            className={
+              assessment.status === "completed"
+                ? "border-primary/30 bg-primary/10 text-primary"
+                : assessment.status === "failed"
+                  ? "border-destructive/30 bg-destructive/10 text-destructive"
+                  : assessment.status === "analyzing"
+                    ? "border-warning/30 bg-warning/10 text-warning"
+                    : ""
+            }
+          >
+            {assessment.status === "analyzing" && (
+              <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+            )}
+            {statusLabel}
+          </Badge>
+          {assessment.readiness_score != null && (
+            <span
+              className={`text-2xl font-bold tabular-nums ${scoreColorClass(assessment.readiness_score)}`}
+            >
+              {assessment.readiness_score}
+            </span>
+          )}
+        </div>
+      </div>
+    </Link>
   );
 }
