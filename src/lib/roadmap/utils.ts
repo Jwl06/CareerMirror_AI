@@ -94,3 +94,38 @@ export const ROADMAP_PHASES = [
   { label: "Apply", weeks: [9, 10, 11, 12] },
   { label: "Launch", weeks: [13, 14, 15, 16] },
 ] as const;
+
+export type RoadmapPhase = (typeof ROADMAP_PHASES)[number];
+
+export function getPhaseForWeek(week: number): RoadmapPhase {
+  return ROADMAP_PHASES.find((phase) => phase.weeks.includes(week)) ?? ROADMAP_PHASES[0];
+}
+
+export function clampWeek(week: number, totalWeeks: number) {
+  return Math.max(1, Math.min(totalWeeks, week));
+}
+
+export function getPhaseProgress(
+  roadmap: RoadmapWeek[],
+  progress: RoadmapProgress,
+  phase: RoadmapPhase,
+) {
+  const weeks = roadmap.filter((week) => phase.weeks.includes(week.week));
+  const totalTasks = weeks.reduce((sum, week) => sum + week.tasks.length, 0);
+  const completedTasks = weeks.reduce(
+    (sum, week) =>
+      sum + week.tasks.filter((_, index) => isTaskComplete(progress, week.week, index)).length,
+    0,
+  );
+
+  return {
+    totalTasks,
+    completedTasks,
+    percent: totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0,
+    weeksComplete: weeks.filter((week) => {
+      if (week.tasks.length === 0) return false;
+      return week.tasks.every((_, index) => isTaskComplete(progress, week.week, index));
+    }).length,
+    weekCount: weeks.length,
+  };
+}

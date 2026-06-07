@@ -106,6 +106,7 @@ Run the migrations in `supabase/migrations/` against your Supabase project (SQL 
 | Assessment & AI analysis | ✅ Done |
 | Career dashboard hub | ✅ Done |
 | Progress tracking & roadmap visualization | ✅ Done |
+| Interactive roadmap timeline & week navigator | ✅ Done |
 
 ## License
 

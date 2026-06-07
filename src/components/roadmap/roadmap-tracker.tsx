@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { CalendarDays, CheckCircle2, Map } from "lucide-react";
 
 import {
@@ -13,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { updateRoadmapProgress } from "@/lib/api/roadmap.functions";
 import type { RoadmapProgress, RoadmapWeek } from "@/lib/assessment/schema";
 import {
+  clampWeek,
   getRoadmapStats,
   getWeekProgress,
   isTaskComplete,
@@ -23,6 +24,7 @@ import {
 import { cn } from "@/lib/utils";
 
 import { RoadmapTimeline } from "./roadmap-timeline";
+import { RoadmapWeekNavigator } from "./roadmap-week-navigator";
 
 type RoadmapTrackerProps = {
   assessmentId: string;
@@ -38,7 +40,12 @@ export function RoadmapTracker({
   compact = false,
 }: RoadmapTrackerProps) {
   const [progress, setProgress] = useState(() => parseRoadmapProgress(initialProgress));
+  const [selectedWeek, setSelectedWeek] = useState(() =>
+    clampWeek(parseRoadmapProgress(initialProgress).currentWeek, roadmap.length),
+  );
+  const [openWeek, setOpenWeek] = useState(`week-${selectedWeek}`);
   const [saving, setSaving] = useState(false);
+  const weekRefs = useRef<Record<number, HTMLDivElement | null>>({});
   const stats = getRoadmapStats(roadmap, progress);
 
   const persistProgress = async (next: RoadmapProgress) => {
@@ -60,12 +67,27 @@ export function RoadmapTracker({
     void persistProgress(toggleTaskInProgress(progress, week, taskIndex, checked));
   };
 
-  const handleSelectWeek = (week: number) => {
-    if (week === progress.currentWeek) return;
-    void persistProgress(setCurrentWeekInProgress(progress, week));
+  const handleSetCurrentWeek = (week: number) => {
+    const clamped = clampWeek(week, roadmap.length);
+    if (clamped === progress.currentWeek) return;
+    void persistProgress(setCurrentWeekInProgress(progress, clamped));
   };
 
-  const defaultOpenWeek = `week-${progress.currentWeek}`;
+  const handleSelectWeek = useCallback(
+    (week: number) => {
+      const clamped = clampWeek(week, roadmap.length);
+      setSelectedWeek(clamped);
+      setOpenWeek(`week-${clamped}`);
+    },
+    [roadmap.length],
+  );
+
+  useEffect(() => {
+    const node = weekRefs.current[selectedWeek];
+    if (!node) return;
+
+    node.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [selectedWeek, openWeek]);
 
   return (
     <div className="space-y-4">
@@ -102,36 +124,55 @@ export function RoadmapTracker({
         </p>
       </div>
 
-      {!compact && (
-        <RoadmapTimeline
-          roadmap={roadmap}
-          progress={progress}
-          onSelectWeek={handleSelectWeek}
-        />
-      )}
+      <RoadmapTimeline
+        roadmap={roadmap}
+        progress={progress}
+        selectedWeek={selectedWeek}
+        onSelectWeek={handleSelectWeek}
+        compact={compact}
+      />
+
+      <RoadmapWeekNavigator
+        roadmap={roadmap}
+        progress={progress}
+        selectedWeek={selectedWeek}
+        onSelectWeek={handleSelectWeek}
+        onSetCurrentWeek={handleSetCurrentWeek}
+        saving={saving}
+        compact={compact}
+      />
 
       <Accordion
         type="single"
         collapsible
-        defaultValue={defaultOpenWeek}
+        value={openWeek}
+        onValueChange={setOpenWeek}
         className="space-y-2"
       >
         {roadmap.map((week) => {
           const weekProgress = getWeekProgress(week, progress);
           const isCurrent = week.week === progress.currentWeek;
+          const isSelected = week.week === selectedWeek;
           const isComplete = weekProgress.percent === 100;
 
           return (
             <AccordionItem
               key={week.week}
               value={`week-${week.week}`}
+              ref={(node) => {
+                weekRefs.current[week.week] = node;
+              }}
               className={cn(
                 "glass overflow-hidden rounded-xl border px-4",
+                isSelected && "border-primary/40",
                 isCurrent && "border-primary/30",
                 isComplete && "border-primary/20",
               )}
             >
-              <AccordionTrigger className="py-4 hover:no-underline">
+              <AccordionTrigger
+                className="py-4 hover:no-underline"
+                onClick={() => handleSelectWeek(week.week)}
+              >
                 <div className="flex flex-1 flex-wrap items-center gap-2 text-left">
                   <Badge
                     variant="outline"
@@ -188,16 +229,6 @@ export function RoadmapTracker({
                     );
                   })}
                 </ul>
-                {!isCurrent && (
-                  <button
-                    type="button"
-                    onClick={() => handleSelectWeek(week.week)}
-                    disabled={saving}
-                    className="mt-4 text-xs text-primary hover:underline disabled:opacity-50"
-                  >
-                    Set as current week
-                  </button>
-                )}
               </AccordionContent>
             </AccordionItem>
           );
