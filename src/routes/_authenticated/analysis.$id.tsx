@@ -1,10 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Loader2 } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { AlertTriangle, Loader2, RefreshCw } from "lucide-react";
 
 import { AnalysisResults } from "@/components/analysis/analysis-results";
+import { StatusPanel } from "@/components/ui/status-panel";
+import { AnalysisPageSkeleton } from "@/components/ui/page-skeletons";
 import { assessmentProfileSchema } from "@/lib/assessment/schema";
 import { parseRoadmapProgress } from "@/lib/roadmap/utils";
 import { getAssessment } from "@/lib/api/assessment.functions";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/analysis/$id")({
   head: () => ({
@@ -19,24 +22,54 @@ export const Route = createFileRoute("/_authenticated/analysis/$id")({
 });
 
 function AnalysisPending() {
-  return (
-    <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3">
-      <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      <p className="text-sm text-muted-foreground">Loading your analysis…</p>
-    </div>
-  );
+  return <AnalysisPageSkeleton />;
 }
 
 function AnalysisPage() {
   const { assessment } = Route.useLoaderData();
   const profile = assessmentProfileSchema.parse(assessment.profile);
 
-  if (assessment.status === "analyzing") {
+  if (assessment.status === "analyzing" || assessment.status === "pending") {
     return (
-      <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-sm text-muted-foreground">AI analysis in progress…</p>
-      </div>
+      <StatusPanel
+        variant="loading"
+        icon={<Loader2 className="h-7 w-7 animate-spin" />}
+        title="AI analysis in progress"
+        description="We're comparing your profile against an ideal industry candidate and building your personalized roadmap. This usually takes under 30 seconds."
+        actions={
+          <Link to="/dashboard">
+            <Button variant="secondary" size="sm">
+              Back to dashboard
+            </Button>
+          </Link>
+        }
+      />
+    );
+  }
+
+  if (assessment.status === "failed") {
+    return (
+      <StatusPanel
+        variant="error"
+        icon={<AlertTriangle className="h-7 w-7 text-destructive" />}
+        title="Analysis failed"
+        description="Something went wrong while generating your career mirror. You can retry with a new assessment or check back later from the dashboard."
+        actions={
+          <>
+            <Link to="/start">
+              <Button size="sm" className="glow">
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Try again
+              </Button>
+            </Link>
+            <Link to="/dashboard">
+              <Button variant="secondary" size="sm">
+                Dashboard
+              </Button>
+            </Link>
+          </>
+        }
+      />
     );
   }
 

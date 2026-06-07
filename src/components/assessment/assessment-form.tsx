@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
 
 const steps = [
   { id: "basics", title: "Basics", description: "Who you are and where you're headed" },
@@ -104,7 +106,15 @@ export function AssessmentForm({ onComplete }: AssessmentFormProps) {
   const experienceLevel = watch("experienceLevel");
 
   return (
-    <form onSubmit={onSubmit} className="mx-auto max-w-2xl">
+    <form onSubmit={onSubmit} className="page-enter mx-auto max-w-2xl">
+      <Link
+        to="/start"
+        className="mb-4 inline-flex items-center gap-1 text-xs text-muted-foreground transition hover:text-foreground"
+      >
+        <ArrowLeft className="h-3 w-3" />
+        Back to assessment modes
+      </Link>
+
       <div className="mb-8">
         <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1 text-xs text-muted-foreground">
           <Sparkles className="h-3 w-3 text-primary" />
@@ -114,10 +124,23 @@ export function AssessmentForm({ onComplete }: AssessmentFormProps) {
           Your <span className="gradient-text">career profile</span>
         </h1>
         <p className="mt-2 text-muted-foreground">{steps[step]!.description}</p>
-        <Progress value={progress} className="mt-4 h-1.5" />
+
+        <div className="mt-5 flex items-center gap-2">
+          {steps.map((item, index) => (
+            <div
+              key={item.id}
+              className={cn(
+                "h-1.5 flex-1 rounded-full transition-colors",
+                index <= step ? "bg-primary" : "bg-secondary",
+              )}
+              aria-hidden
+            />
+          ))}
+        </div>
+        <Progress value={progress} className="mt-3 h-1.5" />
       </div>
 
-      <div className="glass rounded-2xl p-6 md:p-8">
+      <div className="glass fade-in-up rounded-2xl p-6 md:p-8">
         {step === 0 && (
           <div className="space-y-4">
             <Field label="Full name" error={errors.fullName?.message}>

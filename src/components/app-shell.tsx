@@ -39,9 +39,9 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
           activeOptions={{ exact }}
           activeProps={{
             className:
-              "bg-primary/15 text-primary border border-primary/20",
+              "bg-primary/15 text-primary border border-primary/20 border-l-2 border-l-primary",
           }}
-          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition hover:bg-secondary hover:text-foreground"
+          className="flex items-center gap-3 rounded-lg border border-transparent px-3 py-2.5 text-sm font-medium text-muted-foreground transition hover:bg-secondary hover:text-foreground"
         >
           <Icon className="h-4 w-4 shrink-0" />
           {label}
@@ -149,7 +149,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </Sheet>
         </header>
 
-        <main className={cn("flex-1 overflow-auto p-4 md:p-6 lg:p-8")}>{children}</main>
+        <main className={cn("flex-1 overflow-auto p-4 md:p-6 lg:p-8")}>
+          <div className="min-h-full">{children}</div>
+        </main>
       </div>
     </div>
   );

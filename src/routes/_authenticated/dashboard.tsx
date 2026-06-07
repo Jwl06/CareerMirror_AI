@@ -13,6 +13,7 @@ import {
 import { ActiveAssessmentCard } from "@/components/dashboard/active-assessment-card";
 import { RoadmapProgressCard } from "@/components/dashboard/roadmap-progress-card";
 import { ScoreTrendChart } from "@/components/dashboard/score-trend-chart";
+import { DashboardPageSkeleton } from "@/components/ui/page-skeletons";
 import { listAssessments } from "@/lib/api/assessment.functions";
 import { getRoadmapSummary } from "@/lib/api/roadmap.functions";
 import { assessmentProfileSchema } from "@/lib/assessment/schema";
@@ -23,7 +24,6 @@ import {
   type DashboardAssessment,
 } from "@/lib/dashboard/utils";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -43,21 +43,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 function DashboardPending() {
-  return (
-    <div className="mx-auto max-w-5xl space-y-6">
-      <div className="space-y-2">
-        <Skeleton className="h-9 w-48" />
-        <Skeleton className="h-5 w-72" />
-      </div>
-      <Skeleton className="h-48 w-full rounded-2xl" />
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Skeleton className="h-24 rounded-xl" />
-        <Skeleton className="h-24 rounded-xl" />
-        <Skeleton className="h-24 rounded-xl" />
-      </div>
-      <Skeleton className="h-64 w-full rounded-2xl" />
-    </div>
-  );
+  return <DashboardPageSkeleton />;
 }
 
 function DashboardPage() {
@@ -74,7 +60,7 @@ function DashboardPage() {
       : null;
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
+    <div className="page-enter mx-auto max-w-5xl space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Dashboard</h1>
         <p className="mt-2 text-muted-foreground">
@@ -108,7 +94,7 @@ function DashboardPage() {
 
           {roadmapSummary && <RoadmapProgressCard summary={roadmapSummary} />}
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="stagger-children grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard
               icon={BarChart3}
               label="Latest score"
