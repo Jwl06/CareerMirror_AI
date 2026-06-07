@@ -79,7 +79,7 @@ Copy `.env` and replace values with your own Supabase project credentials for pr
 
 ### Database setup
 
-Run the migration in `supabase/migrations/20260307000000_assessments.sql` against your Supabase project (SQL Editor or Supabase CLI) to create the `assessments` table with RLS policies.
+Run the migrations in `supabase/migrations/` against your Supabase project (SQL Editor or Supabase CLI) to create the `assessments` table with RLS policies and the `roadmap_progress` column for task tracking.
 
 ## Planned User Flow
 
@@ -90,6 +90,7 @@ Run the migration in `supabase/migrations/20260307000000_assessments.sql` agains
   → /assessment  Complete career profile form
   → AI analysis
   → /analysis/:id  View scores, gaps, and roadmap
+  → /roadmap/:id  Track weekly tasks and progress
   → /dashboard  Assessment history and progress
 ```
 
@@ -104,7 +105,7 @@ Run the migration in `supabase/migrations/20260307000000_assessments.sql` agains
 | Protected app layout | ✅ Done |
 | Assessment & AI analysis | ✅ Done |
 | Career dashboard hub | ✅ Done |
-| Progress tracking & roadmap visualization | 🔜 |
+| Progress tracking & roadmap visualization | ✅ Done |
 
 ## License
 

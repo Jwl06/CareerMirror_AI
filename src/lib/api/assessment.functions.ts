@@ -93,7 +93,9 @@ export const listAssessments = createServerFn({ method: "GET" })
 
     const { data: assessments, error } = await supabase
       .from("assessments")
-      .select("id, status, readiness_score, profile, created_at, updated_at")
+      .select(
+        "id, status, readiness_score, profile, roadmap_progress, created_at, updated_at",
+      )
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
 

@@ -66,6 +66,23 @@ export const careerAnalysisSchema = z.object({
 });
 
 export type CareerAnalysis = z.infer<typeof careerAnalysisSchema>;
+export type RoadmapWeek = z.infer<typeof roadmapWeekSchema>;
+
+export const roadmapProgressSchema = z.object({
+  startedAt: z.string().datetime(),
+  currentWeek: z.number().min(1).max(16),
+  completedTasks: z.array(z.string()),
+});
+
+export type RoadmapProgress = z.infer<typeof roadmapProgressSchema>;
+
+export function createDefaultRoadmapProgress(): RoadmapProgress {
+  return {
+    startedAt: new Date().toISOString(),
+    currentWeek: 1,
+    completedTasks: [],
+  };
+}
 
 export type AssessmentRecord = {
   id: string;
@@ -74,6 +91,7 @@ export type AssessmentRecord = {
   profile: AssessmentProfile;
   analysis: CareerAnalysis | null;
   readiness_score: number | null;
+  roadmap_progress: RoadmapProgress | null;
   created_at: string;
   updated_at: string;
 };

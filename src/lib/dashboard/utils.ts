@@ -5,6 +5,7 @@ export type DashboardAssessment = {
   status: "pending" | "analyzing" | "completed" | "failed";
   readiness_score: number | null;
   profile: unknown;
+  roadmap_progress: unknown;
   created_at: string;
   updated_at: string;
 };

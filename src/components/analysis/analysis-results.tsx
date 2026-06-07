@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   CheckCircle2,
   GitCompareArrows,
-  Map,
   ShieldCheck,
   Sparkles,
   Target,
@@ -14,16 +13,20 @@ import {
   careerAnalysisSchema,
   type AssessmentProfile,
   type CareerAnalysis,
+  type RoadmapProgress,
 } from "@/lib/assessment/schema";
+import { RoadmapTracker } from "@/components/roadmap/roadmap-tracker";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type AnalysisResultsProps = {
+  assessmentId: string;
   profile: AssessmentProfile;
   analysis: unknown;
   readinessScore: number | null;
   createdAt: string;
+  roadmapProgress: RoadmapProgress | null;
 };
 
 const priorityStyles = {
@@ -39,10 +42,12 @@ function scoreColor(score: number) {
 }
 
 export function AnalysisResults({
+  assessmentId,
   profile,
   analysis: rawAnalysis,
   readinessScore,
   createdAt,
+  roadmapProgress,
 }: AnalysisResultsProps) {
   const parsed = careerAnalysisSchema.safeParse(rawAnalysis);
   if (!parsed.success) {
@@ -179,31 +184,12 @@ export function AnalysisResults({
         </TabsContent>
 
         <TabsContent value="roadmap" className="space-y-3">
-          <div className="mb-2 flex items-center gap-2 text-sm text-muted-foreground">
-            <Map className="h-4 w-4 text-primary" />
-            16-week personalized plan to close your gaps
-          </div>
-          <div className="grid gap-3">
-            {analysis.roadmap.map((week) => (
-              <div key={week.week} className="glass rounded-xl p-5">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="outline" className="border-primary/30 bg-primary/10 text-primary">
-                    Week {week.week}
-                  </Badge>
-                  <span className="font-semibold">{week.title}</span>
-                  <span className="text-xs text-muted-foreground">· {week.focusArea}</span>
-                </div>
-                <ul className="mt-3 space-y-1.5">
-                  {week.tasks.map((task) => (
-                    <li key={task} className="flex items-start gap-2 text-sm text-muted-foreground">
-                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                      {task}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
+          <RoadmapTracker
+            assessmentId={assessmentId}
+            roadmap={analysis.roadmap}
+            initialProgress={roadmapProgress}
+            compact
+          />
         </TabsContent>
       </Tabs>
     </div>

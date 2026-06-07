@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   LogOut,
+  Map,
   Menu,
   Sparkles,
   Target,
@@ -24,6 +25,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 const navItems = [
   { to: "/start", label: "Start", icon: Target, exact: true },
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: false },
+  { to: "/roadmap", label: "Roadmap", icon: Map, exact: false },
 ] as const;
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {

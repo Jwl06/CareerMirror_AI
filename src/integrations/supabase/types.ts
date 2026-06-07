@@ -20,6 +20,7 @@ export type Database = {
           profile: Json;
           analysis: Json | null;
           readiness_score: number | null;
+          roadmap_progress: Json | null;
           created_at: string;
           updated_at: string;
         };
@@ -30,6 +31,7 @@ export type Database = {
           profile: Json;
           analysis?: Json | null;
           readiness_score?: number | null;
+          roadmap_progress?: Json | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -40,6 +42,7 @@ export type Database = {
           profile?: Json;
           analysis?: Json | null;
           readiness_score?: number | null;
+          roadmap_progress?: Json | null;
           created_at?: string;
           updated_at?: string;
         };

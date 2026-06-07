@@ -15,6 +15,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedStartRouteImport } from './routes/_authenticated/start'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAssessmentRouteImport } from './routes/_authenticated/assessment'
+import { Route as AuthenticatedRoadmapIndexRouteImport } from './routes/_authenticated/roadmap/index'
+import { Route as AuthenticatedRoadmapIdRouteImport } from './routes/_authenticated/roadmap.$id'
 import { Route as AuthenticatedAnalysisIdRouteImport } from './routes/_authenticated/analysis.$id'
 
 const AuthRoute = AuthRouteImport.update({
@@ -46,6 +48,17 @@ const AuthenticatedAssessmentRoute = AuthenticatedAssessmentRouteImport.update({
   path: '/assessment',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedRoadmapIndexRoute =
+  AuthenticatedRoadmapIndexRouteImport.update({
+    id: '/roadmap/',
+    path: '/roadmap/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedRoadmapIdRoute = AuthenticatedRoadmapIdRouteImport.update({
+  id: '/roadmap/$id',
+  path: '/roadmap/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAnalysisIdRoute = AuthenticatedAnalysisIdRouteImport.update({
   id: '/analysis/$id',
   path: '/analysis/$id',
@@ -59,6 +72,8 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/start': typeof AuthenticatedStartRoute
   '/analysis/$id': typeof AuthenticatedAnalysisIdRoute
+  '/roadmap/$id': typeof AuthenticatedRoadmapIdRoute
+  '/roadmap/': typeof AuthenticatedRoadmapIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -67,6 +82,8 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/start': typeof AuthenticatedStartRoute
   '/analysis/$id': typeof AuthenticatedAnalysisIdRoute
+  '/roadmap/$id': typeof AuthenticatedRoadmapIdRoute
+  '/roadmap': typeof AuthenticatedRoadmapIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -77,6 +94,8 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/start': typeof AuthenticatedStartRoute
   '/_authenticated/analysis/$id': typeof AuthenticatedAnalysisIdRoute
+  '/_authenticated/roadmap/$id': typeof AuthenticatedRoadmapIdRoute
+  '/_authenticated/roadmap/': typeof AuthenticatedRoadmapIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -87,8 +106,18 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/start'
     | '/analysis/$id'
+    | '/roadmap/$id'
+    | '/roadmap/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/assessment' | '/dashboard' | '/start' | '/analysis/$id'
+  to:
+    | '/'
+    | '/auth'
+    | '/assessment'
+    | '/dashboard'
+    | '/start'
+    | '/analysis/$id'
+    | '/roadmap/$id'
+    | '/roadmap'
   id:
     | '__root__'
     | '/'
@@ -98,6 +127,8 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/start'
     | '/_authenticated/analysis/$id'
+    | '/_authenticated/roadmap/$id'
+    | '/_authenticated/roadmap/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -150,6 +181,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAssessmentRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/roadmap/': {
+      id: '/_authenticated/roadmap/'
+      path: '/roadmap'
+      fullPath: '/roadmap/'
+      preLoaderRoute: typeof AuthenticatedRoadmapIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/roadmap/$id': {
+      id: '/_authenticated/roadmap/$id'
+      path: '/roadmap/$id'
+      fullPath: '/roadmap/$id'
+      preLoaderRoute: typeof AuthenticatedRoadmapIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/analysis/$id': {
       id: '/_authenticated/analysis/$id'
       path: '/analysis/$id'
@@ -165,6 +210,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedStartRoute: typeof AuthenticatedStartRoute
   AuthenticatedAnalysisIdRoute: typeof AuthenticatedAnalysisIdRoute
+  AuthenticatedRoadmapIdRoute: typeof AuthenticatedRoadmapIdRoute
+  AuthenticatedRoadmapIndexRoute: typeof AuthenticatedRoadmapIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -172,6 +219,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedStartRoute: AuthenticatedStartRoute,
   AuthenticatedAnalysisIdRoute: AuthenticatedAnalysisIdRoute,
+  AuthenticatedRoadmapIdRoute: AuthenticatedRoadmapIdRoute,
+  AuthenticatedRoadmapIndexRoute: AuthenticatedRoadmapIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

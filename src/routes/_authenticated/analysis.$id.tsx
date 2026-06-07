@@ -3,6 +3,7 @@ import { Loader2 } from "lucide-react";
 
 import { AnalysisResults } from "@/components/analysis/analysis-results";
 import { assessmentProfileSchema } from "@/lib/assessment/schema";
+import { parseRoadmapProgress } from "@/lib/roadmap/utils";
 import { getAssessment } from "@/lib/api/assessment.functions";
 
 export const Route = createFileRoute("/_authenticated/analysis/$id")({
@@ -41,10 +42,12 @@ function AnalysisPage() {
 
   return (
     <AnalysisResults
+      assessmentId={assessment.id}
       profile={profile}
       analysis={assessment.analysis}
       readinessScore={assessment.readiness_score}
       createdAt={assessment.created_at}
+      roadmapProgress={parseRoadmapProgress(assessment.roadmap_progress)}
     />
   );
 }

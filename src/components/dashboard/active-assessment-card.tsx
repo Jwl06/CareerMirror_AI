@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Loader2, Sparkles, Target } from "lucide-react";
+import { ArrowRight, Loader2, Map, Sparkles, Target } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -91,12 +91,20 @@ export function ActiveAssessmentCard({ assessment, kind }: ActiveAssessmentCardP
               Analyzing profile…
             </Button>
           ) : (
-            <Link to="/analysis/$id" params={{ id: assessment.id }}>
-              <Button className="glow w-full md:w-auto">
-                View full analysis
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
+            <div className="flex w-full flex-col gap-2 sm:flex-row md:w-auto">
+              <Link to="/roadmap/$id" params={{ id: assessment.id }}>
+                <Button variant="secondary" className="w-full md:w-auto">
+                  <Map className="mr-2 h-4 w-4" />
+                  Track roadmap
+                </Button>
+              </Link>
+              <Link to="/analysis/$id" params={{ id: assessment.id }}>
+                <Button className="glow w-full md:w-auto">
+                  View full analysis
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
           )}
         </div>
       </div>

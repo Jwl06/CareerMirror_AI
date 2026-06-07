@@ -11,8 +11,10 @@ import {
 } from "lucide-react";
 
 import { ActiveAssessmentCard } from "@/components/dashboard/active-assessment-card";
+import { RoadmapProgressCard } from "@/components/dashboard/roadmap-progress-card";
 import { ScoreTrendChart } from "@/components/dashboard/score-trend-chart";
 import { listAssessments } from "@/lib/api/assessment.functions";
+import { getRoadmapSummary } from "@/lib/api/roadmap.functions";
 import { assessmentProfileSchema } from "@/lib/assessment/schema";
 import {
   getActiveAssessment,
@@ -29,7 +31,12 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   }),
   loader: async () => {
     const assessments = (await listAssessments()) as DashboardAssessment[];
-    return { assessments };
+    const active = getActiveAssessment(assessments);
+    const roadmapSummary =
+      active?.kind === "active_plan"
+        ? await getRoadmapSummary({ data: { id: active.assessment.id } })
+        : null;
+    return { assessments, roadmapSummary };
   },
   component: DashboardPage,
   pendingComponent: DashboardPending,
@@ -54,7 +61,7 @@ function DashboardPending() {
 }
 
 function DashboardPage() {
-  const { assessments } = Route.useLoaderData();
+  const { assessments, roadmapSummary } = Route.useLoaderData();
   const active = getActiveAssessment(assessments);
   const completed = assessments.filter((a) => a.status === "completed");
   const latestScore = completed[0]?.readiness_score ?? null;
@@ -99,6 +106,8 @@ function DashboardPage() {
             <ActiveAssessmentCard assessment={active.assessment} kind={active.kind} />
           )}
 
+          {roadmapSummary && <RoadmapProgressCard summary={roadmapSummary} />}
+
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard
               icon={BarChart3}
@@ -128,9 +137,26 @@ function DashboardPage() {
             />
             <StatCard
               icon={BarChart3}
-              label="Roadmap plan"
-              value={completed.length > 0 ? "16 weeks" : "—"}
-              hint={completed.length > 0 ? "From latest analysis" : undefined}
+              label="Roadmap progress"
+              value={
+                roadmapSummary
+                  ? `${roadmapSummary.stats.percentComplete}%`
+                  : completed.length > 0
+                    ? "0%"
+                    : "—"
+              }
+              valueClassName={
+                roadmapSummary && roadmapSummary.stats.percentComplete > 0
+                  ? "text-primary"
+                  : undefined
+              }
+              hint={
+                roadmapSummary
+                  ? `${roadmapSummary.stats.completedTasks}/${roadmapSummary.stats.totalTasks} tasks · Week ${roadmapSummary.progress.currentWeek}`
+                  : completed.length > 0
+                    ? "Open roadmap to start tracking"
+                    : undefined
+              }
             />
           </div>
 
