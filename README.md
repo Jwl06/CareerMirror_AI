@@ -1,6 +1,6 @@
 # CareerMirror AI
 
-**Duolingo for career growth** — an AI-powered platform that helps students and early-career developers understand where they stand, identify skill gaps, and follow a personalized roadmap to industry readiness.
+CareerMirror AI bridges the gap between the Current You and the Ideal You by analyzing your skills, projects, experiences, and achievements, then generating AI-powered recommendations and roadmaps to help you become the professional you aspire to be.
 
 ## Problem
 
